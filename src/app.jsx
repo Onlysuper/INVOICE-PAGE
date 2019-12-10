@@ -18,10 +18,12 @@ import './app.scss'
 const store = configStore()
 
 class App extends Component {
-
   config = {
     pages: [
-      'pages/index/index'
+      'pages/index/index',
+      'pages/payment/payment',
+      'pages/electric-invoice/electric-invoice',
+      'pages/quick-invoice/quick-invoice'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -30,7 +32,6 @@ class App extends Component {
       navigationBarTextStyle: 'black'
     }
   }
-
   componentDidMount () {}
 
   componentDidShow () {}

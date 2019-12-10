@@ -181,6 +181,14 @@
     loose-envify "^1.1.0"
     prop-types "^15.6.1"
 
+"@tarojs/redux@^1.3.27":
+  version "1.3.27"
+  resolved "https://registry.npm.taobao.org/@tarojs/redux/download/@tarojs/redux-1.3.27.tgz#2e389b55833378f2407b463ef7213b3ca6774470"
+  integrity sha1-LjibVYMzePJAe0Y+9yE7PKZ3RHA=
+  dependencies:
+    "@tarojs/taro" "1.3.27"
+    "@tarojs/utils" "1.3.27"
+
 "@tarojs/router@1.3.27":
   version "1.3.27"
   resolved "https://registry.npm.taobao.org/@tarojs/router/download/@tarojs/router-1.3.27.tgz#332a12ef626106487a8b949bacc8bbc13e62fe6d"
@@ -7004,7 +7012,7 @@ redux-thunk@^2.3.0:
   resolved "https://registry.npm.taobao.org/redux-thunk/download/redux-thunk-2.3.0.tgz#51c2c19a185ed5187aaa9a2d08b666d0d6467622"
   integrity sha1-UcLBmhhe1Rh6qpotCLZm0NZGdiI=
 
-redux@^4.0.0:
+redux@^4.0.4:
   version "4.0.4"
   resolved "https://registry.npm.taobao.org/redux/download/redux-4.0.4.tgz#4ee1aeb164b63d6a1bcc57ae4aa0b6e6fa7a3796"
   integrity sha1-TuGusWS2PWobzFeuSqC25vp6N5Y=
