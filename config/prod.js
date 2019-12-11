@@ -3,6 +3,8 @@ module.exports = {
     NODE_ENV: '"production"'
   },
   defineConstants: {
+    HOST: '"/api"',
+    HOST_M: '"/api-m"'
   },
   weapp: {},
   h5: {

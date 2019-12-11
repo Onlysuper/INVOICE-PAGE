@@ -25,6 +25,8 @@ const config = {
     }
   },
   defineConstants: {
+    HOST: '"/api"',
+    HOST_M: '"/api-m"'
   },
   weapp: {
     module: {

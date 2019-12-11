@@ -19,6 +19,7 @@ const store = configStore()
 
 class App extends Component {
   config = {
+    networkTimeout:"100000",
     pages: [
       'pages/index/index',
       'pages/payment/payment',

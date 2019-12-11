@@ -1,6 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View } from '@tarojs/components'
-import FormList from "./formList"
 import {
   AtCard,
   AtAvatar, 
@@ -52,7 +51,6 @@ class ElectricInvoice extends Component {
     })
   }
   handleChange (type,value) {
-    console.log(type,value);
     let newObj ={};
     newObj[type]=value
     this.setState({
@@ -96,6 +94,19 @@ class ElectricInvoice extends Component {
   }
   render () {
     let formStructure = this.state.formStructure;
+    const FormContent = formStructure.map((item) =>
+      <AtInput
+        key={item.name}
+        name={item.name}
+        title={item.title}
+        type={item.type}
+        placeholder={item.title}
+        value={this.state.formData[name]}
+        onChange={this.handleChange.bind(this,{name})}
+      />
+    );
+    console.log(FormContent);
+    console.log('formStructure',formStructure)
     return (
       <View>
         <View className='content-top'>
@@ -127,17 +138,40 @@ class ElectricInvoice extends Component {
           value={this.state.billType}
           onClick={this.billTypeChange.bind(this,'billType')}
         />
-        {formStructure.map((item) =>
-           <AtInput
-            key={item.name}
-            name={item.name}
-            title={item.title}
-            type={item.type}
-            placeholder={item.title}
-            value={this.state.formData[item.name]}
-            onChange={this.handleChange.bind(this,item.name)}
+         <FormContent />
+          {/* <AtInput
+            name='enterpriseName'
+            title='企业名称'
+            type='text'
+            placeholder='企业名称'
+            value={this.state.formData.enterpriseName}
+            onChange={this.handleChange.bind(this,'enterpriseName')}
           />
-        )}
+          <AtInput
+            name='taxNo'
+            title='企业税号'
+            type='text'
+            placeholder='企业税号'
+            value={this.state.formData.taxNo}
+            onChange={this.handleChange.bind(this,'taxNo')}
+          />
+          <AtInput
+            name='phoneNo'
+            border={false}
+            title='手机号码'
+            type='phone'
+            placeholder='手机号码'
+            value={this.state.formData.phoneNo}
+            onChange={this.handleChange.bind(this,'phoneNo')}
+          />
+          <AtInput
+            name='mail'
+            title='电子邮箱'
+            type='text'
+            placeholder='电子邮箱'
+            value={this.state.formData.mail}
+            onChange={this.handleChange.bind(this,'mail')}
+          /> */}
         </AtForm>
         <View className='footer'>
           <AtButton onClick={this.submit.bind(this)} type='primary'>申请开票</AtButton>
