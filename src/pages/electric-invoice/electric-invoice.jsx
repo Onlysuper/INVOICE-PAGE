@@ -27,6 +27,8 @@ class ElectricInvoice extends Component {
       formData: {
         billItemNames:[]
       },
+      formKeys:[],
+      formMoreKeys:[],
       // 表单一般表单
       formStructure:{
         enterpriseName:{
@@ -104,36 +106,55 @@ class ElectricInvoice extends Component {
   }
   // 项目配置
   componentWillMount () {
+    console.log('componentWillMount')
+  }
+
+  componentDidMount () {
+    console.log('componentDidMount',this)
     this.getOrderInfoHandle()
   }
 
-  componentDidMount () {}
+  componentDidShow () {
+    console.log('componentDidShow')
+  }
 
-  componentDidShow () {}
-
-  componentDidHide () {}
-  componentWillUpdate () {}
-  componentDidUpdate () {}
+  componentDidHide () {
+    console.log('componentDidHide')
+  }
+  componentWillUpdate () {
+    console.log('componentWillUpdate')
+  }
+  componentDidUpdate () {
+    console.log('componentDidUpdate')
+  }
   // 点击查询税号按钮
   searchTaxHandle(){
-   
     this.setState({
       floatLayoutOpen: true
     })
   }
-  openHanlde(value){
+  openMoreFormHanlde(value){
+    // console.log('value',)
+    // this.setState({
+    //   floatLayoutOpen: false
+    // })
     // 打开手风琴
     this.setState({
       openAccordion: value
     })
   }
   // 关闭天眼查模块
-  layoutCloseHandle(value){
-    console.log(value)
+  layoutCloseHandle(){
+     this.setState({
+      floatLayoutOpen: false
+    })
   }
+  
   // 获取电子发票订单信息
   getOrderInfoHandle(){
+    console.log('这里啊');
     getOrderInfo()({orderNo:'11bn6368p20lv'}).then(res=>{
+      // this.initData();
       if (res.resultCode == "0") {
         this.setState({
           formData:res.data
@@ -170,9 +191,10 @@ class ElectricInvoice extends Component {
     }
     let formKeys = Object.values(formStructure).filter(item=>item.show)
     let formMoreKeys = Object.values(formMoreStructure).filter(item=>item.show)
+    // let formKeys = this.setState.formKeys
+    // let formMoreKeys = this.setState.formMoreKeys
     return (
       <View>
-        
         <View className='content-top'>
           <View className='user-top'>
               <View className='bs-text-center'>
@@ -233,7 +255,7 @@ class ElectricInvoice extends Component {
           this.state.billType==='0'&&(
             <AtAccordion
               open={this.state.openAccordion}
-              onClick={this.openHanlde.bind(this)}
+              onClick={this.openMoreFormHanlde.bind(this)}
               title='更多信息'
             >
               {/* 更多信息start */}
@@ -259,7 +281,7 @@ class ElectricInvoice extends Component {
         </View>
         {/* 天眼查 */}
         <AtFloatLayout isOpened={this.state.floatLayoutOpen} title="这是个标题" onClose={this.layoutCloseHandle.bind(this)}>
-          <TianYanCha  enterpriseName={this.state.enterpriseName}/>
+          <TianYanCha  isOpened={this.state.floatLayoutOpen} enterpriseName={this.state.formData.enterpriseName}/>
         </AtFloatLayout>
       </View>
     )
