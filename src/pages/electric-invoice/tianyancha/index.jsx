@@ -1,7 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 // 引入 WebView 组件
 import { WebView } from '@tarojs/components'
-import './tianyancha.scss'
+import './index.scss'
 
 export default class TianYanCha extends Component {
     constructor(props){
@@ -24,7 +24,8 @@ export default class TianYanCha extends Component {
     }
     var newUrl = "https://www.tianyancha.com/search?key=" +key +"&checkFrom=searchBox"
     return (
-      <WebView className='tianyancha-page' src={newUrl} onMessage={this.handleMessage} />
+     "234"
+      // <WebView className='tianyancha-page' src={newUrl} onMessage={this.handleMessage} />
     )
   }
 }

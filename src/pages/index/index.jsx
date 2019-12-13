@@ -35,16 +35,18 @@ class Index extends Component {
   componentDidShow () { }
 
   componentDidHide () { }
-
+  go(path){
+    console.log(1111);
+    Taro.navigateTo({
+      url: path
+    })
+  }
   render () {
     return (
       <View className='index'>
-         <AtButton type='primary'>按钮文案</AtButton>
-        <Button className='add_btn' onClick={this.props.add}>+</Button>
-        <Button className='dec_btn' onClick={this.props.dec}>-</Button>
-        <Button className='dec_btn' onClick={this.props.asyncAdd}>async</Button>
-        <View><Text>{this.props.counter.num}</Text></View>
-        <View><Text>Hello, World</Text></View>
+         <AtButton onClick={this.go.bind(this,'/pages/invoice-electric/invoice-electric')} type='primary'>电子发票</AtButton>
+         <AtButton onClick={this.go.bind(this)} type='primary'>快速开票</AtButton>
+         <AtButton onClick={this.go.bind(this)} type='primary'>支付</AtButton>
       </View>
     )
   }

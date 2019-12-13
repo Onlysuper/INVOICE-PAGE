@@ -19,11 +19,11 @@ const store = configStore()
 
 class App extends Component {
   config = {
-    networkTimeout:"100000",
     pages: [
       'pages/index/index',
+      'pages/invoice-electric/invoice-electric',
       'pages/payment/payment',
-      'pages/electric-invoice/electric-invoice',
+      // 'pages/electric-invoice/index',
       'pages/quick-invoice/quick-invoice'
     ],
     window: {
