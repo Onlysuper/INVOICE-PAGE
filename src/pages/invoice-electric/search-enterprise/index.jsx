@@ -1,4 +1,4 @@
-import Taro from '@tarojs/taro'
+import Taro, { getCurrentPages } from '@tarojs/taro'
 import { AtSearchBar } from 'taro-ui'
 export default class Index extends Taro.Component {
   constructor () {
@@ -13,7 +13,18 @@ export default class Index extends Taro.Component {
     })
   }
   onActionClick () {
-    console.log('开始搜索')
+    // url: `/pages/invoice-electric/invoice-electric?enterpriseName=${this.state.value}&from=search-enterprise`,
+    // Taro.navigateBack({ delta: 2 })
+    var pages = getCurrentPages();// 获取页面栈
+    // var currPage = pages[pages.length-1];// 获取当前页面
+    var prevPage = pages[pages.length-2];// 获取上一个页面
+    console.log(prevPage);
+    prevPage.setData({
+      formData:"马大哈"
+    })
+    Taro.navigateBack({
+      delta:1
+    })
   }
   render () {
     return (

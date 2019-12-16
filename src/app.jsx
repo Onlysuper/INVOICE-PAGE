@@ -21,9 +21,9 @@ class App extends Component {
   config = {
     pages: [
       'pages/index/index',
-      'pages/invoice-electric/invoice-electric',
+      'pages/invoice-electric/invoice-electric', // 电子发票申请
+      'pages/invoice-electric/search-enterprise/index', // 电子发票查询企业
       'pages/payment/payment',
-      // 'pages/electric-invoice/index',
       'pages/quick-invoice/quick-invoice'
     ],
     window: {
