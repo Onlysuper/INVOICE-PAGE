@@ -1,5 +1,5 @@
+// 电子发票
 import Taro, { Component } from '@tarojs/taro'
-import { connect } from '@tarojs/redux'
 import {
     AtCard,
     AtAvatar,
@@ -17,23 +17,14 @@ import {
 import { View } from '@tarojs/components'
 import './invoice-electric.scss'
 import TianYanCha from "../../components/TianYanCha/index.jsx"
-
+// redux start
+import { connect } from '@tarojs/redux'
 import * as actions from '@actions/invoice_electric'
-import { dispatchInvoiceOrder } from '@actions/invoice_electric'
-@connect(state => state.invoice_electric, {...actions,dispatchInvoiceOrder})
-// @connect(({ invoiceElectric }) => ({
-//   invoiceElectric
-// }), (dispatch) => ({
-  // add () {
-  //   dispatch(add())
-  // },
-  // dec () {
-  //   dispatch(minus())
-  // },
-  // asyncAdd () {
-  //   dispatch(asyncAdd())
-  // }
-// }))
+// import { dispatchInvoiceOrder } from '@actions/invoice_electric'
+console.log(actions);
+@connect(({ invoice_electric }) => ({
+  invoice_enterprise_state:invoice_electric.invoice_enterprise_state}),{...actions})
+
 class InvoiceElectric extends Component {
   config = {
     navigationBarTitleText: '电子发票'
@@ -112,19 +103,18 @@ class InvoiceElectric extends Component {
       this.getOrderInfoHandle()
   }
   componentDidShow () {
-    // console.log('打开')
-    // // console.log(fetch);
-    // console.log('this.props',this.props)
-    // console.log('this.state',this.state)
+    // 搜索企业名称回显
+    if(this.props.invoice_enterprise_state.isSearch){
+      let enterpriseName = this.props.invoice_enterprise_state.name;
+      this.inputChange('enterpriseName',enterpriseName)
+    }
   }
-
   componentDidHide () { }
   billTypeChange(type,value){
     this.setState({
       billType:value
     })
   }
-
   // input数据改变
   inputChange (type,value) {
     let newObj ={};
@@ -273,9 +263,6 @@ class InvoiceElectric extends Component {
   return (
 
         <View>
-           <View>
-            {this.props.invoice_order_state}
-           </View>
           {this.state.formData}
         <View className='content-top'>
         <View className='user-top'>

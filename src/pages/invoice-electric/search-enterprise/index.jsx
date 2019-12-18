@@ -1,5 +1,10 @@
 import Taro, { getCurrentPages } from '@tarojs/taro'
 import { AtSearchBar } from 'taro-ui'
+
+import { connect } from '@tarojs/redux'
+import * as actions from '@actions/invoice_electric'
+import { dispatchInvoiceEnterprise,dispatchInvoiceEnterpriseReset } from '@actions/invoice_electric'// 获取订单信息
+@connect(state => state.invoice_electric, {...actions,dispatchInvoiceEnterprise,dispatchInvoiceEnterpriseReset})
 export default class Index extends Taro.Component {
   constructor () {
     super(...arguments)
@@ -7,21 +12,17 @@ export default class Index extends Taro.Component {
       value: ''
     }
   }
+  componentDidShow () {
+    this.props.dispatchInvoiceEnterpriseReset()
+  }
   onChange (value) {
     this.setState({
       value: value
     })
   }
+  // 点击搜索按钮
   onActionClick () {
-    // url: `/pages/invoice-electric/invoice-electric?enterpriseName=${this.state.value}&from=search-enterprise`,
-    // Taro.navigateBack({ delta: 2 })
-    var pages = getCurrentPages();// 获取页面栈
-    // var currPage = pages[pages.length-1];// 获取当前页面
-    var prevPage = pages[pages.length-2];// 获取上一个页面
-    console.log(prevPage);
-    prevPage.setData({
-      formData:"马大哈"
-    })
+    this.props.dispatchInvoiceEnterprise(this.state.value);
     Taro.navigateBack({
       delta:1
     })
