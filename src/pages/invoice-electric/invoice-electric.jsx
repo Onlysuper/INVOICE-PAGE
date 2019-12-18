@@ -1,4 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
+import { connect } from '@tarojs/redux'
 import {
     AtCard,
     AtAvatar,
@@ -16,7 +17,23 @@ import {
 import { View } from '@tarojs/components'
 import './invoice-electric.scss'
 import TianYanCha from "../../components/TianYanCha/index.jsx"
-import { getOrderInfo } from '../../apis/index'
+
+import * as actions from '@actions/invoice_electric'
+import { dispatchInvoiceOrder } from '@actions/invoice_electric'
+@connect(state => state.invoice_electric, {...actions,dispatchInvoiceOrder})
+// @connect(({ invoiceElectric }) => ({
+//   invoiceElectric
+// }), (dispatch) => ({
+  // add () {
+  //   dispatch(add())
+  // },
+  // dec () {
+  //   dispatch(minus())
+  // },
+  // asyncAdd () {
+  //   dispatch(asyncAdd())
+  // }
+// }))
 class InvoiceElectric extends Component {
   config = {
     navigationBarTitleText: '电子发票'
@@ -95,13 +112,10 @@ class InvoiceElectric extends Component {
       this.getOrderInfoHandle()
   }
   componentDidShow () {
-    // console.log('zzz',this.$router.params);
-    // if(this.$router.params.from==='search-enterprise'&&this.$router.params.enterpriseName){
-    //   let newformData = Object.assign({},this.state.formData,{enterpriseName:this.$router.params.enterpriseName})
-    //   this.setState({
-    //     formData:newformData
-    //   })
-    // }
+    // console.log('打开')
+    // // console.log(fetch);
+    // console.log('this.props',this.props)
+    // console.log('this.state',this.state)
   }
 
   componentDidHide () { }
@@ -218,27 +232,25 @@ class InvoiceElectric extends Component {
     })
   }
 
+
   // 获取电子发票订单信息
   getOrderInfoHandle(){
     console.log('这里啊');
-    getOrderInfo()({orderNo:'11ffm7vhh20lv'}).then(res=>{
-      // this.initData();
-      if (res.resultCode == "0") {
+    const payload = {
+      orderNo:'11ffm7vhh20lv'
+    }
+    this.props.dispatchInvoiceOrder(payload).then(res=>{
+      if(res.resultCode==='0'){
         this.setState({
           formData:res.data
         })
+      }else if (res.resultCode == "90") {
+        // 跳转到开票状态页面
+      }else{
+        // 获取不到信息给个提示
       }
-      //  else if (data.resultCode == "90") {
-      //         this.$router.replace({
-      //                 path: "/eic_billFail",
-      //                 query: {
-      //                         resultCode: data.resultCode,
-      //                         resultMsg: data.resultMsg
-      //                 }
-      //         });
-      // } else {
-      //         this.Toast(data.resultMsg);
-      // }
+    }).catch((err) => {
+      console.log(err);
     })
   }
   render () {
@@ -259,7 +271,11 @@ class InvoiceElectric extends Component {
   let formKeys = Object.values(formStructure).filter(item=>item.show)
   let formMoreKeys = Object.values(formMoreStructure).filter(item=>item.show)
   return (
+
         <View>
+           <View>
+            {this.props.invoice_order_state}
+           </View>
           {this.state.formData}
         <View className='content-top'>
         <View className='user-top'>

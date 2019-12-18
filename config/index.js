@@ -1,3 +1,4 @@
+const path = require('path')
 const config = {
   projectName: 'invoice-wxapp',
   date: '2019-12-10',
@@ -9,6 +10,15 @@ const config = {
   },
   sourceRoot: 'src',
   outputRoot: 'dist',
+  alias: {
+    '@actions': path.resolve(__dirname, '..', 'src/actions'),
+    '@assets': path.resolve(__dirname, '..', 'src/assets'),
+    '@components': path.resolve(__dirname, '..', 'src/components'),
+    '@constants': path.resolve(__dirname, '..', 'src/constants'),
+    '@reducers': path.resolve(__dirname, '..', 'src/reducers'),
+    '@utils': path.resolve(__dirname, '..', 'src/utils'),
+    '@apis': path.resolve(__dirname, '..', 'src/apis')
+  },
   plugins: {
     babel: {
       sourceMap: true,
