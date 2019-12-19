@@ -5,7 +5,7 @@ import { connect } from '@tarojs/redux'
 import * as actions from '@actions/invoice_electric'
 import { dispatchInvoiceEnterprise,dispatchInvoiceEnterpriseReset } from '@actions/invoice_electric'// 获取订单信息
 @connect(state => state.invoice_electric, {...actions,dispatchInvoiceEnterprise,dispatchInvoiceEnterpriseReset})
-export default class Index extends Taro.Component {
+export default class SearchEnterprise extends Taro.Component {
   constructor () {
     super(...arguments)
     this.state = {

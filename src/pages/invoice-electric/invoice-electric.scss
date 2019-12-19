@@ -16,4 +16,17 @@
   margin-top: 30px;
   padding: 30px;
 }
+.bs-form-row{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  >at-input{
+    flex: 1;
+  }
+  .but{
+    // padding-left: 10px;
+    margin-right: 10px;
+    font-size: 28px;
+  }
+}
 

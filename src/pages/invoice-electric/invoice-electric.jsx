@@ -11,8 +11,11 @@ import {
     AtNoticebar,
     AtAccordion,
     AtButton,
-    AtFloatLayout
+    AtFloatLayout,
+    AtActionSheet,
+    AtActionSheetItem
   } from 'taro-ui'
+
 
 import { View } from '@tarojs/components'
 import './invoice-electric.scss'
@@ -21,7 +24,6 @@ import TianYanCha from "../../components/TianYanCha/index.jsx"
 import { connect } from '@tarojs/redux'
 import * as actions from '@actions/invoice_electric'
 // import { dispatchInvoiceOrder } from '@actions/invoice_electric'
-console.log(actions);
 @connect(({ invoice_electric }) => ({
   invoice_enterprise_state:invoice_electric.invoice_enterprise_state}),{...actions})
 
@@ -32,9 +34,10 @@ class InvoiceElectric extends Component {
   constructor () {
     super(...arguments)
     this.state = {
+      actionOpen:false, // 选择导入信息菜单
       enterpriseOpen:false,// 企业搜索模态框
       tianyanchaOpen:false, // 天眼查模态框
-      openAccordion:false, // 默认为企业 打开更多信息
+      openMoreForm:false, // 默认为企业 打开更多信息
       billType:'0', //开票类型 ,0 为企业，1为个人
       formData: {
         billItemNames:[]
@@ -49,11 +52,11 @@ class InvoiceElectric extends Component {
       show:true
       },
       taxNo:{
-      name:'taxNo',
-      type:'text',
-      title:'企业税号',
-      placeholder:'请输入企业税号',
-      show:true
+       name:'taxNo',
+       type:'text',
+       title:'企业税号',
+       placeholder:'请输入企业税号',
+       show:true
       },
       phoneNo:{
       name:'phoneNo',
@@ -106,17 +109,36 @@ class InvoiceElectric extends Component {
     // 搜索企业名称回显
     if(this.props.invoice_enterprise_state.isSearch){
       let enterpriseName = this.props.invoice_enterprise_state.name;
-      this.inputChange('enterpriseName',enterpriseName)
+      this.formDataChange('enterpriseName',enterpriseName)
     }
   }
   componentDidHide () { }
+  // 选择个人发票或普票
   billTypeChange(type,value){
     this.setState({
       billType:value
     })
+    // 数组重新组合
+    let formStructure =Object.assign({}, this.state.formStructure); // 一遍表单
+    if(value==='0'){
+      // 企业
+      formStructure['enterpriseName']['title']="企业名称"
+      formStructure['enterpriseName']['placeholder']="企业名称"
+      // formStructure.taxNo.show=true
+    }
+    if(value==='1'){
+      // 个人
+      formStructure['enterpriseName']['title']="发票抬头"
+      formStructure['enterpriseName']['placeholder']="请输入个人或姓名"
+      // formStructure.taxNo.show=false
+    }
+    this.setState({
+      formStructure:Object.assign({},formStructure)
+    })
+    console.log('巴拉巴拉',Object.assign({},formStructure));
   }
   // input数据改变
-  inputChange (type,value) {
+  formDataChange (type,value) {
     let newObj ={};
     newObj[type]=value
     this.setState({
@@ -124,63 +146,23 @@ class InvoiceElectric extends Component {
     })
   }
   submit(){
-    console.log(this);
-    // let self = this;
-    // if (this.order.transactionOrderNo.length < 5) {
-    //         this.Toast("订单信息不存在，无法开具电子发票");
-    //         return;
-    // }
+    if (this.state.formData.transactionOrderNo < 5) {
+      Taro.showToast({
+        title: '订单信息不存在，无法开具电子发票',
+        duration: 2000
+      }).then(res => console.log(res))
+    }
+    //由于类型不同需要做处理
+    let billType = ""; //开票类型 1:普票、3:普票个人
+    //提取form
+    let form = {};
 
-    // //由于类型不同需要做处理
-    // let billType = ""; //开票类型 1:普票、3:普票个人
-    // //提取form
-    // let form = {};
-
-    // switch (this.billType) {
-    //         case "普票":
-    //                 billType = "1";
-    //                 form = { ...this.form };
-    //                 break;
-    //         case "普票个人":
-    //                 billType = "3";
-    //                 form = {
-    //                         enterpriseName: this.form.enterpriseName,
-    //                         phoneNo: this.form.phoneNo,
-    //                         mail: this.form.mail
-    //                 };
-    //                 break;
-    // }
-
-    // //校验表单 返回true代表校验通过
-    // if (!this.checkForm(billType)) return false;
-
-    // //合并数据
-    // var sendData = {
-    //         orderNo: this.orderNo,
-    //         openId: this.openId,
-    //         billType: billType,
-    //         ...form
-    // };
-
-    // //税号小写转大写
-    // if (sendData.taxNo) {
-    //         sendData.taxNo = sendData.taxNo.toUpperCase();
-    // }
-
-    // if(!(/(^[\d|A-Z]{15}$)|(^[\d|A-Z]{18}$)|(^[\d|A-Z]{20}$)/.test(sendData.taxNo)) && self.page.titleType === "企业"){
-    //         self.MessageBox.confirm('税号一般为15，18，20位数字或者大写字母，您填写的税号可能有误，确定提交？').then(action => {
-    //                   //发送开票申请
-    //               if (action == 'confirm') {     //确认的回调
-    //                 self.confirmApply(sendData);
-    //                 }
-    //         }).catch(()=>{
-    //                 if (err == 'cancel') {     //取消的回调
-    //                 // console.log(2);
-    //                 }
-    //         });
-    // }else{
-    //         self.confirmApply(sendData)
-    // }
+  }
+  // 点击选择按钮
+  composeOptions(){
+    this.setState({
+      actionOpen:true
+    })
   }
   // 点击查询税号按钮
   searchTaxHandle(){
@@ -191,7 +173,7 @@ class InvoiceElectric extends Component {
   openMoreFormHanlde(value){
     // 点击查看更多
     this.setState({
-      openAccordion: value
+      openMoreForm: value
     })
   }
   // 关闭天眼查模块
@@ -221,13 +203,10 @@ class InvoiceElectric extends Component {
       enterpriseOpen: false
     })
   }
-
-
   // 获取电子发票订单信息
   getOrderInfoHandle(){
-    console.log('这里啊');
     const payload = {
-      orderNo:'11ffm7vhh20lv'
+      orderNo:'11gecpd6p20lv'
     }
     this.props.dispatchInvoiceOrder(payload).then(res=>{
       if(res.resultCode==='0'){
@@ -244,26 +223,12 @@ class InvoiceElectric extends Component {
     })
   }
   render () {
-    let formStructure = this.state.formStructure; // 一遍表单
-    let formMoreStructure = this.state.formMoreStructure; //查看更多表单
-    if(this.state.billType==='0'){
-      // 企业
-      formStructure['enterpriseName']['title']="企业名称"
-      formStructure['enterpriseName']['placeholder']="企业名称"
-      formStructure['taxNo']['show']=true
-    }
-    if(this.state.billType==='1'){
-      // 个人
-      formStructure['enterpriseName']['title']="发票抬头"
-      formStructure['enterpriseName']['placeholder']="请输入个人或姓名"
-      formStructure['taxNo']['show']=false
-    }
+  let formStructure = this.state.formStructure; // 一遍表单
+  let formMoreStructure = this.state.formMoreStructure; //查看更多表单
   let formKeys = Object.values(formStructure).filter(item=>item.show)
   let formMoreKeys = Object.values(formMoreStructure).filter(item=>item.show)
   return (
-
-        <View>
-          {this.state.formData}
+      <View>
         <View className='content-top'>
         <View className='user-top'>
             <View className='bs-text-center'>
@@ -294,27 +259,30 @@ class InvoiceElectric extends Component {
           />
           <View className='bs-split-border20'></View>
           {formKeys.map((item,index) =>{
-            return (
-            <AtInput
-              key={index}
-              name={item['name']}
-              title={item['title']}
-              type={item['type']}
-              placeholder={item['placeholder']}
-              value={this.state.formData[item['name']]}
-              editable={this.state.billType==='0'&&item['name']==='enterpriseName'?false:true}
-              onClick={this.inputClick.bind(this,item['name'])}
-              onChange={this.inputChange.bind(this,item['name'])}
-            >
-            {item.name==='taxNo'&&this.state.formData.enterpriseName&& process.env.TARO_ENV === 'h5'&& <View onClick={this.searchTaxHandle.bind(this)}>查询税号</View>}
-          </AtInput>)
+              return (
+                !(this.state.billType==='0'&&item.name==='taxNo')?
+                 <View key={index} className="bs-form-row">
+                  <AtInput
+                    name={item['name']}
+                    title={item['title']}
+                    type={item['type']}
+                    placeholder={item['placeholder']}
+                    value={this.state.formData[item['name']]}
+                    editable={this.state.billType==='0'&&item['name']==='enterpriseName'?false:true}
+                    onClick={this.inputClick.bind(this,item['name'])}
+                    onChange={this.formDataChange.bind(this,item['name'])}
+                  >
+                  {item.name==='taxNo'&&this.state.formData.enterpriseName&& process.env.TARO_ENV === 'h5'&& <AtButton  onClick={this.searchTaxHandle.bind(this)}type='primary' size='small'>查询税号</AtButton>}
+                  {this.state.billType==='0'&&item.name==='enterpriseName' && process.env.TARO_ENV !== 'h5'&& <AtButton  onClick={this.composeOptions.bind(this)} type='primary' size='small'>选择</AtButton>}
+                </AtInput>
+              </View>:null)
           })}
           {this.state.billType==='1'&&(<AtNoticebar>根据税务总局要求，除企业之外的所有个人消费者、个体工商户以及行政机关、事业单位、社会团体等非企业性单位均无需提供纳税人识别号。</AtNoticebar>)}
           {this.state.billType==='0'&&(<AtNoticebar>提示：请核对税号及联系方式准确无误</AtNoticebar>)}
           {this.state.billType==='0'&& <View className='bs-split-border20'></View>}
           {this.state.billType==='0'&&
             <AtAccordion
-              open={this.state.openAccordion}
+              open={this.state.openMoreForm}
               onClick={this.openMoreFormHanlde.bind(this)}
               title='更多信息'
             >
@@ -328,7 +296,7 @@ class InvoiceElectric extends Component {
                     type={item.type}
                     placeholder={item.title}
                     value={this.state.formData.name}
-                    onChange={this.inputChange.bind(this,item.name)}
+                    onChange={this.formDataChange.bind(this,item.name)}
                   >
                 </AtInput>
                 )
@@ -351,7 +319,15 @@ class InvoiceElectric extends Component {
         }
 
         </View>
-        </View>
+      <AtActionSheet isOpened={this.state.actionOpen}>
+        <AtActionSheetItem>
+          按钮一
+        </AtActionSheetItem>
+        <AtActionSheetItem>
+          按钮二
+        </AtActionSheetItem>
+      </AtActionSheet>
+      </View>
     )
   }
 }

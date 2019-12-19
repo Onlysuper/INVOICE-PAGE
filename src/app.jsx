@@ -1,5 +1,6 @@
 import '@tarojs/async-await'
 import Taro, { Component } from '@tarojs/taro'
+import { AtToast } from "taro-ui"
 // import 'taro-ui/dist/style/index.scss' // 全局引入一次即可
 import { Provider } from '@tarojs/redux'
 
@@ -22,7 +23,7 @@ class App extends Component {
     pages: [
       'pages/index/index',
       'pages/invoice-electric/invoice-electric', // 电子发票申请
-      'pages/invoice-electric/search-enterprise/index', // 电子发票查询企业
+      'pages/invoice-electric/search-enterprise', // 电子发票查询企业
       'pages/payment/payment',
       'pages/quick-invoice/quick-invoice'
     ],
