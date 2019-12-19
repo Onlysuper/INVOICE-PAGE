@@ -1,5 +1,6 @@
 // 电子发票
 import Taro, { Component } from '@tarojs/taro'
+import { View,Text } from '@tarojs/components'
 import {
     AtCard,
     AtAvatar,
@@ -15,9 +16,6 @@ import {
     AtActionSheet,
     AtActionSheetItem
   } from 'taro-ui'
-
-
-import { View } from '@tarojs/components'
 import './invoice-electric.scss'
 import TianYanCha from "../../components/TianYanCha/index.jsx"
 // redux start
@@ -60,9 +58,7 @@ class InvoiceElectric extends Component {
         bankCard:""
       },
       // 选择按钮
-      oprationStructure:[
-
-      ],
+      footerOpration:[],
       // 表单结构
       formStructure:{
       enterpriseName:{
@@ -124,15 +120,19 @@ class InvoiceElectric extends Component {
     }
   }
   componentDidMount () {
+      this.footerOprationCompose();
       // 获取订单信息
       this.getOrderHandle()
       // 获取根据微信开票记录
       this.getInvoiceRecordHandle()
   }
   componentDidShow () {
+    console.log(this.props.invoice_enterprise_state);
     // 搜索企业名称回显
     if(this.props.invoice_enterprise_state.isSearch){
+
       let enterpriseName = this.props.invoice_enterprise_state.name;
+      console.log('enterpriseName',enterpriseName)
       this.formDataChange('enterpriseName',enterpriseName)
     }
   }
@@ -167,7 +167,7 @@ class InvoiceElectric extends Component {
     let newObj ={};
     newObj[type]=value
     this.setState({
-      orderData:Object.assign({}, this.state.orderData,newObj)
+      formData:Object.assign({}, this.state.orderData,newObj)
     })
   }
   // 提交开票信息
@@ -210,15 +210,15 @@ class InvoiceElectric extends Component {
     })
   }
 
-  // 企业名称被input被点击时候
-  inputClick(type){
-    if(type==='enterpriseName'){
-      // 跳转到搜索页面
-      Taro.navigateTo({
-        url: '/pages/invoice-electric/search-enterprise/index'
-      })
-    }
-  }
+  // // 企业名称被input被点击时候
+  // inputClick(type){
+  //   if(type==='enterpriseName'){
+  //     // 跳转到搜索页面
+  //     Taro.navigateTo({
+  //       url: '/pages/invoice-electric/search-enterprise/index'
+  //     })
+  //   }
+  // }
   // 打开企业搜索模块
   enterpriseOpenHandle(){
 
@@ -258,7 +258,8 @@ class InvoiceElectric extends Component {
       if(res.resultCode==='0'){
         let data = res.data || [];
         // 组合开票记录选择按钮列表
-        this.oprationStructureCompose(data);
+        console.log(8888888);
+        this.footerOprationCompose(data);
         // 回显最近一条发票信息
         let recentInvoice = data[0];
         if(recentInvoice){
@@ -271,16 +272,26 @@ class InvoiceElectric extends Component {
       console.log(err);
     })
   }
-  oprationStructureCompose(res){
+  footerOprationCompose(res){
     let newArr=[
+      {
+        lable:"企业名匹配",
+        code:"search"
+      },
       {
         lable:"导入微信抬头",
         code:"weixin"
       }
-    ].concat(res)
-    this.setState({
-      oprationStructure:newArr
-    })
+    ]
+    if(res instanceof Array){
+      this.setState({
+        footerOpration:newArr.concat(res)
+      })
+    }else{
+      this.setState({
+        footerOpration:newArr
+      })
+    }
   }
   // 回显某条发票记录
   echoOneRecordInvoice(res){
@@ -321,6 +332,12 @@ class InvoiceElectric extends Component {
           mail:''
         })
       })
+    }else if(res.code==='search'){
+      console.log('按照企业名搜索')
+      Taro.navigateTo({
+        url: '/pages/enterprise-search/enterprise-search'
+        // url: '/pages/quick-invoice/quick-invoice'
+      })
     }else{
       // 从历史记录选择
       this.echoOneRecordInvoice(res)
@@ -331,7 +348,8 @@ class InvoiceElectric extends Component {
     let formMoreStructure = this.state.formMoreStructure; //查看更多表单
     let formKeys = Object.values(formStructure).filter(item=>item.show)
     let formMoreKeys = Object.values(formMoreStructure).filter(item=>item.show)
-    let oprationStructure = this.state.oprationStructure;// 获取信息方式
+    let footerOpration = this.state.footerOpration;// 获取信息方式
+    console.log('footerOpration',footerOpration);
   return (
       <View>
         <View className='content-top'>
@@ -373,7 +391,7 @@ class InvoiceElectric extends Component {
                    placeholder={item['placeholder']}
                    value={this.state.formData[item['name']]}
                    // editable={this.state.billType==='0'&&item['name']==='enterpriseName'?false:true}
-                   onClick={this.inputClick.bind(this,item['name'])}
+                  //  onClick={this.inputClick.bind(this,item['name'])}
                    onChange={this.formDataChange.bind(this,item['name'])}
                  >
                  {item.name==='taxNo'&&this.state.formData.enterpriseName&& process.env.TARO_ENV === 'h5'&& <AtButton  onClick={this.searchTaxHandle.bind(this)}type='primary' size='small'>查询税号</AtButton>}
@@ -423,11 +441,11 @@ class InvoiceElectric extends Component {
         </View>
       <AtActionSheet cancelText='取消' title='可根据以下操作获取相应开票信息' isOpened={this.state.actionOpen} onClose={ this.closeChoiceAction.bind(this) }>
         {
-          oprationStructure.map((item,index) =>{
+          footerOpration.map((item,index) =>{
             return (
              (process.env.TARO_ENV !== 'weapp'&&item.code==='weixin')?null:
               <AtActionSheetItem onClick={this.getInvoiceDataChoice.bind(this,item)} key={index}>
-                {item.lable||item.enterpriseName}
+                 {item.code==='search'?<Text className='danger' style='color: #FF4949;'>{item.lable||item.enterpriseName}</Text>:item.lable||item.enterpriseName}
               </AtActionSheetItem>
             )
           })

@@ -1,11 +1,12 @@
-import Taro, { getCurrentPages } from '@tarojs/taro'
+import Taro, { Component } from '@tarojs/taro'
+import { View } from '@tarojs/components'
 import { AtSearchBar } from 'taro-ui'
-
+// redux start
 import { connect } from '@tarojs/redux'
 import * as actions from '@actions/invoice_electric'
-import { dispatchInvoiceEnterprise,dispatchInvoiceEnterpriseReset } from '@actions/invoice_electric'// 获取订单信息
-@connect(state => state.invoice_electric, {...actions,dispatchInvoiceEnterprise,dispatchInvoiceEnterpriseReset})
-export default class SearchEnterprise extends Taro.Component {
+// 获取订单信息
+@connect(({ invoice_electric }) => ({invoice_enterprise_state:invoice_electric.invoice_enterprise_state}),{...actions})
+class EnterpriseSearch extends Component {
   constructor () {
     super(...arguments)
     this.state = {
@@ -13,6 +14,8 @@ export default class SearchEnterprise extends Taro.Component {
     }
   }
   componentDidShow () {
+    console.log(this.props);
+    // console.log(invoice_enterprise_state);
     this.props.dispatchInvoiceEnterpriseReset()
   }
   onChange (value) {
@@ -39,3 +42,5 @@ export default class SearchEnterprise extends Taro.Component {
     )
   }
 }
+
+export default EnterpriseSearch
