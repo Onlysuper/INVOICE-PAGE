@@ -1,7 +1,6 @@
 import {
   API_INVOICE_ElECTRIC_ORDER, //电子发票订单信息
   API_INVOICE_ElECTRIC_RECORD, //根据openid获取开票记录
-  API_INVOICE_ENTERPRISE_NAME
 } from '@constants/apis'
 
 import {

@@ -1,0 +1,3 @@
+
+// 企业名称查询税号
+export const INVOICE_ENTERPRISE_NAME = 'INVOICE_ENTERPRISE_NAME'

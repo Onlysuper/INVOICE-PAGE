@@ -10,6 +10,7 @@ export const API_INVOICE_ElECTRIC_ORDER = `${host}/invoice/electronic/query/cust
 export const API_INVOICE_ElECTRIC_RECORD= `${host}/invoice/page`
 
 // 企业名称模糊搜索
-export const API_INVOICE_ENTERPRISE_NAME = `${host}/v2/enterpriseCard/newEntCardQuery`
+export const API_INVOICE_ENTERPRISE_NAME = `${hostM}/v2/enterpriseCard/newEntCardQuery`
+// const entCardQuery = (randomCode, key) => { return (params) => { return http.get(base.oaIp, `/v2/enterpriseCard/newEntCardQuery/${randomCode}/${key}`, params, false) } }
 
-const entCardQuery = (randomCode, key) => { return (params) => { return http.get(base.oaIp, `/v2/enterpriseCard/newEntCardQuery/${randomCode}/${key}`, params, false) } }
+// const entCardQuery = (randomCode, key) => { return (params) => { return http.get(base.oaIp, `/v2/enterpriseCard/newEntCardQuery/${randomCode}/${key}`, params, false) } }

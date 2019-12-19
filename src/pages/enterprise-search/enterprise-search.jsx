@@ -3,9 +3,9 @@ import { View } from '@tarojs/components'
 import { AtSearchBar } from 'taro-ui'
 // redux start
 import { connect } from '@tarojs/redux'
-import * as actions from '@actions/invoice_electric'
+import * as actions from '@actions/enterprise_search'
 // 获取订单信息
-@connect(({ invoice_electric }) => ({invoice_enterprise_state:invoice_electric.invoice_enterprise_state}),{...actions})
+@connect(({ enterprise_search }) => ({enterprise_search_state:enterprise_search.enterprise_search_state}),{...actions})
 class EnterpriseSearch extends Component {
   constructor () {
     super(...arguments)
@@ -15,7 +15,7 @@ class EnterpriseSearch extends Component {
   }
   componentDidShow () {
     console.log(this.props);
-    // console.log(invoice_enterprise_state);
+    // console.log(enterprise_search_state);
     this.props.dispatchInvoiceEnterpriseReset()
   }
   onChange (value) {

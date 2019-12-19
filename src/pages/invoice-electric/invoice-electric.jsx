@@ -20,10 +20,12 @@ import './invoice-electric.scss'
 import TianYanCha from "../../components/TianYanCha/index.jsx"
 // redux start
 import { connect } from '@tarojs/redux'
-import * as actions from '@actions/invoice_electric'
-@connect(({ invoice_electric }) => ({
-  invoice_enterprise_state:invoice_electric.invoice_enterprise_state}),{...actions})
-
+import {dispatchInvoiceOrder,dispatchInvoiceRecord} from '@actions/invoice_electric'
+// import {} from '@actions/enterprise_search'
+@connect(
+  ({ enterprise_search }) => ({enterprise_search:enterprise_search.enterprise_search_state}),
+  {dispatchInvoiceOrder,dispatchInvoiceRecord}
+)
 class InvoiceElectric extends Component {
   config = {
     navigationBarTitleText: '电子发票'
@@ -127,11 +129,11 @@ class InvoiceElectric extends Component {
       this.getInvoiceRecordHandle()
   }
   componentDidShow () {
-    console.log(this.props.invoice_enterprise_state);
+    console.log(this.props.enterprise_search);
     // 搜索企业名称回显
-    if(this.props.invoice_enterprise_state.isSearch){
+    if(this.props.enterprise_search.isSearch){
 
-      let enterpriseName = this.props.invoice_enterprise_state.name;
+      let enterpriseName = this.props.enterprise_search.name;
       console.log('enterpriseName',enterpriseName)
       this.formDataChange('enterpriseName',enterpriseName)
     }
