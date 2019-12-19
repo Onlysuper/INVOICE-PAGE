@@ -23,7 +23,6 @@ import TianYanCha from "../../components/TianYanCha/index.jsx"
 // redux start
 import { connect } from '@tarojs/redux'
 import * as actions from '@actions/invoice_electric'
-// import { dispatchInvoiceOrder } from '@actions/invoice_electric'
 @connect(({ invoice_electric }) => ({
   invoice_enterprise_state:invoice_electric.invoice_enterprise_state}),{...actions})
 
@@ -39,10 +38,32 @@ class InvoiceElectric extends Component {
       tianyanchaOpen:false, // 天眼查模态框
       openMoreForm:false, // 默认为企业 打开更多信息
       billType:'0', //开票类型 ,0 为企业，1为个人
-      formData: {
-        billItemNames:[]
+      //订单数据
+      orderData: {
+        customerNo: "",
+        enterpriseName: "--",
+        taxNo: "--",
+        transactionOrderNo: "--",
+        billAmount: "0",
+        billItemNames: ["--"],
+        authCode: ''
       },
-       //   // 表单一般表单
+      // 发票数据
+      formData:{
+        enterpriseName: "",
+        taxNo: "",
+        phoneNo: "",
+        mail: "",
+        registerAddress:"",
+        companyPhone:"",
+        countBank:"",
+        bankCard:""
+      },
+      // 选择按钮
+      oprationStructure:[
+
+      ],
+      // 表单结构
       formStructure:{
       enterpriseName:{
       name:'enterpriseName',
@@ -103,7 +124,10 @@ class InvoiceElectric extends Component {
     }
   }
   componentDidMount () {
-      this.getOrderInfoHandle()
+      // 获取订单信息
+      this.getOrderHandle()
+      // 获取根据微信开票记录
+      this.getInvoiceRecordHandle()
   }
   componentDidShow () {
     // 搜索企业名称回显
@@ -118,50 +142,53 @@ class InvoiceElectric extends Component {
     this.setState({
       billType:value
     })
-    // 数组重新组合
+    this.formStructureCompose()
+  }
+  // 根据企业与个人 数组重新组合
+  formStructureCompose(){
+    let billType = this.state.billType;
     let formStructure =Object.assign({}, this.state.formStructure); // 一遍表单
-    if(value==='0'){
+    if(billType==='0'){
       // 企业
       formStructure['enterpriseName']['title']="企业名称"
       formStructure['enterpriseName']['placeholder']="企业名称"
-      // formStructure.taxNo.show=true
     }
-    if(value==='1'){
+    if(billType==='1'){
       // 个人
       formStructure['enterpriseName']['title']="发票抬头"
       formStructure['enterpriseName']['placeholder']="请输入个人或姓名"
-      // formStructure.taxNo.show=false
     }
     this.setState({
       formStructure:Object.assign({},formStructure)
     })
-    console.log('巴拉巴拉',Object.assign({},formStructure));
   }
   // input数据改变
   formDataChange (type,value) {
     let newObj ={};
     newObj[type]=value
     this.setState({
-      formData:Object.assign({}, this.state.formData,newObj)
+      orderData:Object.assign({}, this.state.orderData,newObj)
     })
   }
+  // 提交开票信息
   submit(){
-    if (this.state.formData.transactionOrderNo < 5) {
+    if (this.state.orderData.transactionOrderNo < 5) {
       Taro.showToast({
         title: '订单信息不存在，无法开具电子发票',
         duration: 2000
       }).then(res => console.log(res))
     }
-    //由于类型不同需要做处理
-    let billType = ""; //开票类型 1:普票、3:普票个人
-    //提取form
-    let form = {};
-
   }
   // 点击选择按钮
-  composeOptions(){
+  openChoiceAction(){
     this.setState({
       actionOpen:true
+    })
+  }
+  // 关闭选择
+  closeChoiceAction(){
+    this.setState({
+      actionOpen:false
     })
   }
   // 点击查询税号按钮
@@ -203,15 +230,15 @@ class InvoiceElectric extends Component {
       enterpriseOpen: false
     })
   }
-  // 获取电子发票订单信息
-  getOrderInfoHandle(){
+  // 获取订单信息
+  getOrderHandle(){
     const payload = {
       orderNo:'11gecpd6p20lv'
     }
     this.props.dispatchInvoiceOrder(payload).then(res=>{
       if(res.resultCode==='0'){
         this.setState({
-          formData:res.data
+          orderData:res.data
         })
       }else if (res.resultCode == "90") {
         // 跳转到开票状态页面
@@ -222,11 +249,89 @@ class InvoiceElectric extends Component {
       console.log(err);
     })
   }
+
+
+  //根据openid获取已开的电子发票记录
+  getInvoiceRecordHandle(){
+    const payload = { openId: "oHHGmwBryETTaIw27Y-dn3Q4A5cw" }
+    this.props.dispatchInvoiceRecord(payload).then(res=>{
+      if(res.resultCode==='0'){
+        let data = res.data || [];
+        // 组合开票记录选择按钮列表
+        this.oprationStructureCompose(data);
+        // 回显最近一条发票信息
+        let recentInvoice = data[0];
+        if(recentInvoice){
+          this.echoOneRecordInvoice(recentInvoice)
+        }
+      }else{
+        // 获取不到信息给个提示
+      }
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
+  oprationStructureCompose(res){
+    let newArr=[
+      {
+        lable:"导入微信抬头",
+        code:"weixin"
+      }
+    ].concat(res)
+    this.setState({
+      oprationStructure:newArr
+    })
+  }
+  // 回显某条发票记录
+  echoOneRecordInvoice(res){
+    // 根据税号区分企业与个人,并回显 0=企业 1=个人
+    var billType = res.taxNo ? "0" : "1";
+    this.setState({
+      billType:billType
+    })
+    this.echoInvoiceForm(res)
+  }
+  // 回显发票信息
+  echoInvoiceForm(res){
+    this.setState({
+      formData:{
+        enterpriseName:res.enterpriseName,
+        taxNo:res.taxNo,
+        phoneNo:res.phoneNo,
+        mail:res.mail
+      }
+    })
+  }
+  // 选择导入发票信息方式
+  getInvoiceDataChoice(res){
+    this.setState({
+      actionOpen:false
+    })
+    if(res.code==='weixin'){
+      // 从微信抬头选择
+      Taro.chooseInvoiceTitle({}).then(res=>{
+        var billType = res.type===0 ? "0" : "1";//type 0:企业  1:个人
+        this.setState({
+          billType:billType
+        })
+        this.echoInvoiceForm({
+          enterpriseName:res.title,
+          taxNo:res.taxNumber,
+          phoneNo:'',
+          mail:''
+        })
+      })
+    }else{
+      // 从历史记录选择
+      this.echoOneRecordInvoice(res)
+    }
+  }
   render () {
-  let formStructure = this.state.formStructure; // 一遍表单
-  let formMoreStructure = this.state.formMoreStructure; //查看更多表单
-  let formKeys = Object.values(formStructure).filter(item=>item.show)
-  let formMoreKeys = Object.values(formMoreStructure).filter(item=>item.show)
+    let formStructure = this.state.formStructure; // 表单数据
+    let formMoreStructure = this.state.formMoreStructure; //查看更多表单
+    let formKeys = Object.values(formStructure).filter(item=>item.show)
+    let formMoreKeys = Object.values(formMoreStructure).filter(item=>item.show)
+    let oprationStructure = this.state.oprationStructure;// 获取信息方式
   return (
       <View>
         <View className='content-top'>
@@ -234,16 +339,16 @@ class InvoiceElectric extends Component {
             <View className='bs-text-center'>
                 <AtAvatar image='https://jdc.jd.com/img/200' className='avatar' circle ></AtAvatar>
             </View>
-            <View className='bs-text-center'>{this.state.formData.enterpriseName}</View>
+            <View className='bs-text-center'>{this.state.order.enterpriseName}</View>
         </View>
         <AtCard
           title='订单信息'
           icon={{ value: 'file-generic', color: '#77a1fd' }}
         >
             <AtList hasBorder={false}>
-            <AtListItem  title='订单号' note={this.state.formData.transactionOrderNo} />
-            <AtListItem  title='开票金额' note={`${this.state.formData.billAmount}元`} />
-            <AtListItem hasBorder={false} title='开票项目' note={this.state.formData.billItemNames[0]} />
+            <AtListItem  title='订单号' note={this.state.orderData.transactionOrderNo} />
+            <AtListItem  title='开票金额' note={`${this.state.orderData.billAmount}元`} />
+            <AtListItem hasBorder={false} title='开票项目' note={this.state.orderData.billItemNames[0]} />
             </AtList>
         </AtCard>
         <View className='bs-split-border20 bs-top-20'></View>
@@ -260,22 +365,21 @@ class InvoiceElectric extends Component {
           <View className='bs-split-border20'></View>
           {formKeys.map((item,index) =>{
               return (
-                !(this.state.billType==='0'&&item.name==='taxNo')?
-                 <View key={index} className="bs-form-row">
-                  <AtInput
-                    name={item['name']}
-                    title={item['title']}
-                    type={item['type']}
-                    placeholder={item['placeholder']}
-                    value={this.state.formData[item['name']]}
-                    editable={this.state.billType==='0'&&item['name']==='enterpriseName'?false:true}
-                    onClick={this.inputClick.bind(this,item['name'])}
-                    onChange={this.formDataChange.bind(this,item['name'])}
-                  >
-                  {item.name==='taxNo'&&this.state.formData.enterpriseName&& process.env.TARO_ENV === 'h5'&& <AtButton  onClick={this.searchTaxHandle.bind(this)}type='primary' size='small'>查询税号</AtButton>}
-                  {this.state.billType==='0'&&item.name==='enterpriseName' && process.env.TARO_ENV !== 'h5'&& <AtButton  onClick={this.composeOptions.bind(this)} type='primary' size='small'>选择</AtButton>}
-                </AtInput>
-              </View>:null)
+                (this.state.billType==='1'&&item.name==='taxNo')?null:<View key={index} className="bs-form-row">
+                 <AtInput
+                   name={item['name']}
+                   title={item['title']}
+                   type={item['type']}
+                   placeholder={item['placeholder']}
+                   value={this.state.formData[item['name']]}
+                   // editable={this.state.billType==='0'&&item['name']==='enterpriseName'?false:true}
+                   onClick={this.inputClick.bind(this,item['name'])}
+                   onChange={this.formDataChange.bind(this,item['name'])}
+                 >
+                 {item.name==='taxNo'&&this.state.formData.enterpriseName&& process.env.TARO_ENV === 'h5'&& <AtButton  onClick={this.searchTaxHandle.bind(this)}type='primary' size='small'>查询税号</AtButton>}
+                 {this.state.billType==='0'&&item.name==='enterpriseName' && process.env.TARO_ENV !== 'h5'&& <AtButton  onClick={this.openChoiceAction.bind(this)} type='primary' size='small'>选择</AtButton>}
+               </AtInput>
+             </View>)
           })}
           {this.state.billType==='1'&&(<AtNoticebar>根据税务总局要求，除企业之外的所有个人消费者、个体工商户以及行政机关、事业单位、社会团体等非企业性单位均无需提供纳税人识别号。</AtNoticebar>)}
           {this.state.billType==='0'&&(<AtNoticebar>提示：请核对税号及联系方式准确无误</AtNoticebar>)}
@@ -311,21 +415,23 @@ class InvoiceElectric extends Component {
         <AtFloatLayout isOpened={this.state.enterpriseOpen} title="匹配企业" onClose={this.enterpriseCloseHandle.bind(this)}>
           查企业
         </AtFloatLayout>
-        {/* 天眼查 */}
         {process.env.TARO_ENV === 'h5'&&
           <AtFloatLayout isOpened={this.state.tianyanchaOpen} title="查询企业" onClose={this.tianyanchaCloseHandle.bind(this)}>
             <TianYanCha isOpened={this.state.tianyanchaOpen} enterpriseName={this.state.formData.enterpriseName}/>
           </AtFloatLayout>
         }
-
         </View>
-      <AtActionSheet isOpened={this.state.actionOpen}>
-        <AtActionSheetItem>
-          按钮一
-        </AtActionSheetItem>
-        <AtActionSheetItem>
-          按钮二
-        </AtActionSheetItem>
+      <AtActionSheet cancelText='取消' title='可根据以下操作获取相应开票信息' isOpened={this.state.actionOpen} onClose={ this.closeChoiceAction.bind(this) }>
+        {
+          oprationStructure.map((item,index) =>{
+            return (
+             (process.env.TARO_ENV !== 'weapp'&&item.code==='weixin')?null:
+              <AtActionSheetItem onClick={this.getInvoiceDataChoice.bind(this,item)} key={index}>
+                {item.lable||item.enterpriseName}
+              </AtActionSheetItem>
+            )
+          })
+        }
       </AtActionSheet>
       </View>
     )

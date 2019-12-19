@@ -1,5 +1,6 @@
 import {
-  API_INVOICE_ElECTRIC_ORDER,
+  API_INVOICE_ElECTRIC_ORDER, //电子发票订单信息
+  API_INVOICE_ElECTRIC_RECORD, //根据openid获取开票记录
   API_INVOICE_ENTERPRISE_NAME
 } from '@constants/apis'
 
@@ -17,6 +18,19 @@ import { createAction } from '@utils/redux'
 export const dispatchInvoiceOrder = payload => createAction({
   type: INVOICE_ElECTRIC_ORDER,
   url: API_INVOICE_ElECTRIC_ORDER,
+  payload,
+  fetchOptions:{
+    needAllCode:true
+  }
+})
+
+/**
+ * 根据openid获取已开电子发票记录
+ * @param {*} payload
+ */
+export const dispatchInvoiceRecord = payload => createAction({
+  type: INVOICE_ElECTRIC_ORDER,
+  url: API_INVOICE_ElECTRIC_RECORD,
   payload,
   fetchOptions:{
     needAllCode:true
