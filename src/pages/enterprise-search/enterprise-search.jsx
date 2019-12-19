@@ -3,9 +3,22 @@ import { View } from '@tarojs/components'
 import { AtSearchBar } from 'taro-ui'
 // redux start
 import { connect } from '@tarojs/redux'
-import * as actions from '@actions/enterprise_search'
+import {
+  dispatchEnterpriseSearch, // 企业名称搜索
+  dispatchEnterpriseReset, // 企业名称置空
+  dispatchEnterpriseSelected // 企业选择
+} from '@actions/enterprise_search'
 // 获取订单信息
-@connect(({ enterprise_search }) => ({enterprise_search_state:enterprise_search.enterprise_search_state}),{...actions})
+@connect(({ enterprise_search }) => (
+  {
+    enterprise_search_state:enterprise_search.enterprise_search_state
+  }),
+  {
+    dispatchEnterpriseSearch,
+    dispatchEnterpriseReset,
+    dispatchEnterpriseSelected
+   }
+)
 class EnterpriseSearch extends Component {
   constructor () {
     super(...arguments)
@@ -14,9 +27,7 @@ class EnterpriseSearch extends Component {
     }
   }
   componentDidShow () {
-    console.log(this.props);
-    // console.log(enterprise_search_state);
-    this.props.dispatchInvoiceEnterpriseReset()
+    this.props.dispatchEnterpriseReset()
   }
   onChange (value) {
     this.setState({
@@ -25,10 +36,17 @@ class EnterpriseSearch extends Component {
   }
   // 点击搜索按钮
   onActionClick () {
-    this.props.dispatchInvoiceEnterprise(this.state.value);
-    Taro.navigateBack({
-      delta:1
+    this.props.dispatchEnterpriseSearch({
+      randomCode:"",
+      key:this.state.value
+    }).then(res=>{
+      console.log(res);
     })
+
+    // this.props.dispatchEnterpriseSelected(this.state.value);
+    // Taro.navigateBack({
+    //   delta:1
+    // })
   }
   render () {
     return (

@@ -1,4 +1,4 @@
-import { INVOICE_ElECTRIC_ORDER,INVOICE_ENTERPRISE_NAME } from '@constants/invoice_electric'
+import { INVOICE_ElECTRIC_ORDER } from '@constants/invoice_electric'
 const INITIAL_STATE = {
   invoice_order_state: {
   }// 订单数据

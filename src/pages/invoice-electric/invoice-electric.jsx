@@ -21,7 +21,6 @@ import TianYanCha from "../../components/TianYanCha/index.jsx"
 // redux start
 import { connect } from '@tarojs/redux'
 import {dispatchInvoiceOrder,dispatchInvoiceRecord} from '@actions/invoice_electric'
-// import {} from '@actions/enterprise_search'
 @connect(
   ({ enterprise_search }) => ({enterprise_search:enterprise_search.enterprise_search_state}),
   {dispatchInvoiceOrder,dispatchInvoiceRecord}
