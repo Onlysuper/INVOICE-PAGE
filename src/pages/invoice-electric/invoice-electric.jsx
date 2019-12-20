@@ -17,7 +17,8 @@ import {
     AtActionSheetItem
   } from 'taro-ui'
 import './invoice-electric.scss'
-import TianYanCha from "../../components/TianYanCha/index.jsx"
+import TianYanCha from "@components/TianYanCha/index.jsx"
+import EnterpriseInput from "@components/EnterpriseInput/index.jsx"
 // redux start
 import { connect } from '@tarojs/redux'
 import {
@@ -74,60 +75,53 @@ class InvoiceElectric extends Component {
       footerOpration:[],
       // 表单结构
       formStructure:{
-      enterpriseName:{
-      name:'enterpriseName',
-      type:'text',
-      title:'企业名称',
-      placeholder:'请输入企业名称 / 关键字',
-      show:true
-      },
-      taxNo:{
-       name:'taxNo',
-       type:'text',
-       title:'企业税号',
-       placeholder:'请输入企业税号',
-       show:true
-      },
-      phoneNo:{
-      name:'phoneNo',
-      type:'phone',
-      title:'手机号码',
-      placeholder:'请输入手机号码',
-      show:true
-      },
-      mail:{
-      name:'mail',
-      type:'mail',
-      title:'电子邮箱',
-      placeholder:'请输入电子邮箱',
-      show:true
-      }
+        taxNo:{
+          name:'taxNo',
+          type:'text',
+          title:'企业税号',
+          placeholder:'请输入企业税号',
+          show:true
+        },
+        phoneNo:{
+          name:'phoneNo',
+          type:'phone',
+          title:'手机号码',
+          placeholder:'请输入手机号码',
+          show:true
+        },
+        mail:{
+          name:'mail',
+          type:'mail',
+          title:'电子邮箱',
+          placeholder:'请输入电子邮箱',
+          show:true
+        }
       },
       formMoreStructure: {
-      registerAddress:{
-      name:'registerAddress',
-      type:'text',
-      title:'注册地址',
-      placeholder:'请输入注册地址',
-      show:true
+        registerAddress:{
+        name:'registerAddress',
+        type:'text',
+        title:'注册地址',
+        placeholder:'请输入注册地址',
+        show:true
       },
       companyPhone:{
-      name:'companyPhone',
-      type:'text',
-      title:'公司电话',
-      show:true
+        name:'companyPhone',
+        type:'text',
+        title:'公司电话',
+        show:true
       },
       countBank:{
-      name:'countBank',
-      type:'text',
-      title:'开户银行',
-      show:true
+        name:'countBank',
+        type:'text',
+        title:'开户银行',
+        show:true
       },
       bankCard:{
-      name:'bankCard',
-      type:'text',
-      title:'银行帐号',
-      show:true
+        name:'bankCard',
+        type:'text',
+        title:'银行帐号',
+        show:true
       }
      }
     }
@@ -158,25 +152,6 @@ class InvoiceElectric extends Component {
   billTypeChange(type,value){
     this.setState({
       billType:value
-    })
-    this.formStructureCompose()
-  }
-  // 根据企业与个人 数组重新组合
-  formStructureCompose(){
-    let billType = this.state.billType;
-    let formStructure =Object.assign({}, this.state.formStructure); // 一遍表单
-    if(billType==='0'){
-      // 企业
-      formStructure['enterpriseName']['title']="企业名称"
-      formStructure['enterpriseName']['placeholder']="企业名称"
-    }
-    if(billType==='1'){
-      // 个人
-      formStructure['enterpriseName']['title']="发票抬头"
-      formStructure['enterpriseName']['placeholder']="请输入个人或姓名"
-    }
-    this.setState({
-      formStructure:Object.assign({},formStructure)
     })
   }
   // input数据改变
@@ -456,6 +431,17 @@ class InvoiceElectric extends Component {
             onClick={this.billTypeChange.bind(this,'billType')}
           />
           <View className='bs-split-border20'></View>
+          <EnterpriseInput></EnterpriseInput>
+          <AtInput
+              name='enterpriseName'
+              title={this.state.billType==='0'?'企业名称':'发票抬头'}
+              type='text'
+              placeholder={this.state.billType==='0'?'请输入企业名称':'请输入个人或姓名'}
+              value={this.state.formData.enterpriseName}
+              onChange={this.formDataChange.bind(this,'enterpriseName')}
+            >
+            {this.state.billType==='0'&& process.env.TARO_ENV !== 'h5'&& <AtButton className="but-r"  onClick={this.openChoiceAction.bind(this)} type='primary' size='small'>选择</AtButton>}
+          </AtInput>
           {formKeys.map((item,index) =>{
               return (
                 (this.state.billType==='1'&&item.name==='taxNo')?null:<View key={index} className="bs-form-row">
@@ -514,18 +500,18 @@ class InvoiceElectric extends Component {
           </AtFloatLayout>
         }
         </View>
-      <AtActionSheet cancelText='取消' title='可根据以下操作获取相应开票信息' isOpened={this.state.actionOpen} onClose={ this.closeChoiceAction.bind(this) }>
-        {
-          footerOpration.map((item,index) =>{
-            return (
-             (process.env.TARO_ENV !== 'weapp'&&item.code==='weixin')?null:
-              <AtActionSheetItem onClick={this.getInvoiceDataChoice.bind(this,item)} key={index}>
-                 {item.code==='search'?<Text className='danger' style='color: #FF4949;'>{item.lable||item.enterpriseName}</Text>:item.lable||item.enterpriseName}
-              </AtActionSheetItem>
-            )
-          })
-        }
-      </AtActionSheet>
+        <AtActionSheet cancelText='取消' title='可根据以下操作获取相应开票信息' isOpened={this.state.actionOpen} onClose={ this.closeChoiceAction.bind(this) }>
+          {
+            footerOpration.map((item,index) =>{
+              return (
+              (process.env.TARO_ENV !== 'weapp'&&item.code==='weixin')?null:
+                <AtActionSheetItem onClick={this.getInvoiceDataChoice.bind(this,item)} key={index}>
+                  {item.code==='search'?<Text className='danger' style='color: #FF4949;'>{item.lable||item.enterpriseName}</Text>:item.lable||item.enterpriseName}
+                </AtActionSheetItem>
+              )
+            })
+          }
+        </AtActionSheet>
       </View>
     )
   }
