@@ -1,3 +1,5 @@
 // 查询订单
 export const INVOICE_ElECTRIC_ORDER = 'INVOICE_ElECTRIC_ORDER'
+// 开电子发票
+export const INVOICE_ElECTRIC_PAYMENT = 'INVOICE_ElECTRIC_PAYMENT'
 

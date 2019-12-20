@@ -9,14 +9,12 @@ export const API_INVOICE_ElECTRIC_ORDER = `${host}/invoice/electronic/query/cust
 // 根据openid获取开票记录
 export const API_INVOICE_ElECTRIC_RECORD= `${host}/invoice/page`
 
-// 企业名称模糊搜索
+// 开电子发票
+export const API_INVOICE_ElECTRIC_PAYMENT= `${host}/invoice/electronic/open`
+
+
+// 企业名称模糊模糊查询
 export const API_INVOICE_ENTERPRISE_NAME = `${hostM}/v2/enterpriseCard/newEntCardQuery`
-
-
-//航信查询
+//航信企业名称模糊查询
 export const API_INVOICE_ENTERPRISE_NAME_HX = `${hostM}/v2/enterpriseCard/taxNoQuery`
 
-// const entCardQueryCode = () => { return (params) => { return http.get(base.oaIp, `/v2/enterpriseCard/taxNoQuery`, params, false) } }
-// const entCardQuery = (randomCode, key) => { return (params) => { return http.get(base.oaIp, `/v2/enterpriseCard/newEntCardQuery/${randomCode}/${key}`, params, false) } }
-
-// const entCardQuery = (randomCode, key) => { return (params) => { return http.get(base.oaIp, `/v2/enterpriseCard/newEntCardQuery/${randomCode}/${key}`, params, false) } }

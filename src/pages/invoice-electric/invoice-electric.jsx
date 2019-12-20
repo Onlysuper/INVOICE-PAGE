@@ -20,10 +20,20 @@ import './invoice-electric.scss'
 import TianYanCha from "../../components/TianYanCha/index.jsx"
 // redux start
 import { connect } from '@tarojs/redux'
-import {dispatchInvoiceOrder,dispatchInvoiceRecord} from '@actions/invoice_electric'
+import {
+  dispatchInvoiceOrder, // 获取订单
+  dispatchInvoiceRecord, // 获取电子发票记录
+  dispatchInvoicePayment // 开具电子发票
+} from '@actions/invoice_electric'
 @connect(
-  ({ enterprise_search }) => ({enterprise_search:enterprise_search.enterprise_search_state}),
-  {dispatchInvoiceOrder,dispatchInvoiceRecord}
+  ({ enterprise_search }) => ({
+    enterprise_search:enterprise_search.enterprise_search_state
+  }),
+  {
+    dispatchInvoiceOrder,
+    dispatchInvoiceRecord,
+    dispatchInvoicePayment
+  }
 )
 class InvoiceElectric extends Component {
   config = {
@@ -32,6 +42,8 @@ class InvoiceElectric extends Component {
   constructor () {
     super(...arguments)
     this.state = {
+      orderNo: "",// 链接拿到orderNo
+      openId: "", // 链接拿到openid
       actionOpen:false, // 选择导入信息菜单
       enterpriseOpen:false,// 企业搜索模态框
       tianyanchaOpen:false, // 天眼查模态框
@@ -121,6 +133,9 @@ class InvoiceElectric extends Component {
     }
   }
   componentDidMount () {
+      this.getRouterData();
+
+      // 底部选择按钮组合
       this.footerOprationCompose();
       // 获取订单信息
       this.getOrderHandle()
@@ -128,10 +143,18 @@ class InvoiceElectric extends Component {
       this.getInvoiceRecordHandle()
   }
   componentDidShow () {
-    // 搜索企业名称回显
+    // 搜索企业名称回调
     this.enterpriseSearchCallback()
   }
   componentDidHide () { }
+  // 路由数据组合
+  getRouterData(){
+    let params = this.$router.params;
+    this.setState({
+      orderNo:params.orderNo||'',
+      openId:params.openId||''
+    })
+  }
   // 选择个人发票或普票
   billTypeChange(type,value){
     this.setState({
@@ -165,15 +188,7 @@ class InvoiceElectric extends Component {
       formData:Object.assign({}, this.state.orderData,newObj)
     })
   }
-  // 提交开票信息
-  submit(){
-    if (this.state.orderData.transactionOrderNo < 5) {
-      Taro.showToast({
-        title: '订单信息不存在，无法开具电子发票',
-        duration: 2000
-      }).then(res => console.log(res))
-    }
-  }
+
   // 点击选择按钮
   openChoiceAction(){
     this.setState({
@@ -282,6 +297,7 @@ class InvoiceElectric extends Component {
     })
     this.echoInvoiceForm(res)
   }
+  // 企业模糊搜索回调
   enterpriseSearchCallback(){
     if(this.props.enterprise_search.isSearch){
       let res  = this.props.enterprise_search;
@@ -335,6 +351,76 @@ class InvoiceElectric extends Component {
       // 从历史记录选择
       this.echoOneRecordInvoice(res)
     }
+  }
+   // 提交开票信息
+  submit(){
+    let formData = this.state.formData;
+    let billType = this.state.billType==='0'?'企业':'个人';
+    let sendBillType = billType==='企业'?'1':'3'; // 1：企业，3：个人
+    let sendData = {
+      orderNo: this.state.orderNo,
+      openId: this.state.openId,
+      billType: sendBillType,
+    };
+    if (this.state.orderData.transactionOrderNo < 5) {
+      Taro.showToast({
+        title: '订单信息不存在，无法开具电子发票',
+        duration: 2000
+      }).then(res => console.log(res))
+    }
+    if(billType==='企业'){
+      // 企业发票
+      sendData=Object.assign(sendData,formData)
+    }else if(billType==='个人'){
+      // 个人发票
+      sendData=Object.assign(sendData,{
+        enterpriseName: formData.enterpriseName,
+        phoneNo: formData.phoneNo,
+        mail: formData.mail
+      })
+    }else{
+      throw Error('未知发票类型')
+    }
+    // 税号转大写
+    sendData.taxNo&&(sendData.taxNo=sendData.taxNo.toUpperCase());
+    if(self.page.titleType === "企业"){
+      if(!(/(^[\d|A-Z]{15}$)|(^[\d|A-Z]{18}$)|(^[\d|A-Z]{20}$)/.test(sendData.taxNo))){
+        // '税号一般为15，18，20位数字或者大写字母，您填写的税号可能有误，确定提交？'
+        Taro.showModal({
+          title:'温馨',
+          content:'税号一般为15，18，20位数字或者大写字母，您填写的税号可能有误，确定提交？',
+          success:(res)=>{
+            if(res.confirm){
+              this.confirmSubmit(sendData)
+            }else{
+              console.log('暂时不提交')
+            }
+          },
+          fail:(err)=>{
+            return new Error()
+          }
+        })
+      }
+    }else{
+      this.confirmSubmit(sendData)
+    }
+  }
+  // 确认提交
+  confirmSubmit(sendData){
+    this.props.dispatchInvoicePayment({
+      ...sendData
+    }).then(res=>{
+      // 开具成功 跳转到状态页面
+      console.log(res);
+      // self.$router.replace({
+      //   name: "eic_billTip",
+      //   query: {
+      //           ...this.$route.query,
+      //           entName: this.order.enterpriseName,
+      //           taxNo: this.order.taxNo
+      //   }
+      // });
+    })
   }
   render () {
     let formStructure = this.state.formStructure; // 表单数据
