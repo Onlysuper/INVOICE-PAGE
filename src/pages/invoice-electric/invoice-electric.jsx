@@ -128,14 +128,8 @@ class InvoiceElectric extends Component {
       this.getInvoiceRecordHandle()
   }
   componentDidShow () {
-    console.log(this.props.enterprise_search);
     // 搜索企业名称回显
-    if(this.props.enterprise_search.isSearch){
-
-      let enterpriseName = this.props.enterprise_search.name;
-      console.log('enterpriseName',enterpriseName)
-      this.formDataChange('enterpriseName',enterpriseName)
-    }
+    this.enterpriseSearchCallback()
   }
   componentDidHide () { }
   // 选择个人发票或普票
@@ -210,21 +204,6 @@ class InvoiceElectric extends Component {
       tianyanchaOpen: false
     })
   }
-
-  // // 企业名称被input被点击时候
-  // inputClick(type){
-  //   if(type==='enterpriseName'){
-  //     // 跳转到搜索页面
-  //     Taro.navigateTo({
-  //       url: '/pages/invoice-electric/search-enterprise/index'
-  //     })
-  //   }
-  // }
-  // 打开企业搜索模块
-  enterpriseOpenHandle(){
-
-  }
-
   // 关闭企业搜索模块
   enterpriseCloseHandle(){
      this.setState({
@@ -303,6 +282,18 @@ class InvoiceElectric extends Component {
     })
     this.echoInvoiceForm(res)
   }
+  enterpriseSearchCallback(){
+    if(this.props.enterprise_search.isSearch){
+      let res  = this.props.enterprise_search;
+      this.echoInvoiceForm({
+        enterpriseName:res.name,
+        taxNo:res.tax,
+        phoneNo:"",
+        mail:""
+      })
+      // console.log('enterprise_search',this.props.enterprise_search);
+    }
+  }
   // 回显发票信息
   echoInvoiceForm(res){
     this.setState({
@@ -335,8 +326,9 @@ class InvoiceElectric extends Component {
       })
     }else if(res.code==='search'){
       console.log('按照企业名搜索')
+
       Taro.navigateTo({
-        url: '/pages/enterprise-search/enterprise-search'
+        url: '/pages/enterprise-search/enterprise-search?authCode='+this.state.orderData.authCode
         // url: '/pages/quick-invoice/quick-invoice'
       })
     }else{

@@ -1,5 +1,6 @@
-import { INVOICE_ENTERPRISE_NAME } from '@constants/enterprise_search'
+import { ENTERPRISE_SEARCH,ENTERPRISE_SEARCH_TEST} from '@constants/enterprise_search'
 const INITIAL_STATE = {
+  enterprise_search_test:'zzzz',
   enterprise_search_state:{ // 搜索企业数据
     isSearch:false,
     name:"",
@@ -8,10 +9,16 @@ const INITIAL_STATE = {
 }
 export default function invoice_electric (state = INITIAL_STATE, action) {
   switch (action.type) {
-    case INVOICE_ENTERPRISE_NAME: {
+    case ENTERPRISE_SEARCH: {
       return {
         ...state,
         enterprise_search_state:action.payload
+      }
+    }
+    case ENTERPRISE_SEARCH_TEST: {
+      return {
+        ...state,
+        enterprise_search_test:'哈哈哈哈完成'
       }
     }
     default:

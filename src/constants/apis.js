@@ -11,6 +11,12 @@ export const API_INVOICE_ElECTRIC_RECORD= `${host}/invoice/page`
 
 // 企业名称模糊搜索
 export const API_INVOICE_ENTERPRISE_NAME = `${hostM}/v2/enterpriseCard/newEntCardQuery`
+
+
+//航信查询
+export const API_INVOICE_ENTERPRISE_NAME_HX = `${hostM}/v2/enterpriseCard/taxNoQuery`
+
+// const entCardQueryCode = () => { return (params) => { return http.get(base.oaIp, `/v2/enterpriseCard/taxNoQuery`, params, false) } }
 // const entCardQuery = (randomCode, key) => { return (params) => { return http.get(base.oaIp, `/v2/enterpriseCard/newEntCardQuery/${randomCode}/${key}`, params, false) } }
 
 // const entCardQuery = (randomCode, key) => { return (params) => { return http.get(base.oaIp, `/v2/enterpriseCard/newEntCardQuery/${randomCode}/${key}`, params, false) } }
