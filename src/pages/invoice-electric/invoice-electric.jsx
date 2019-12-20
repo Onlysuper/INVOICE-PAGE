@@ -134,7 +134,6 @@ class InvoiceElectric extends Component {
   }
   componentDidMount () {
       this.getRouterData();
-
       // 底部选择按钮组合
       this.footerOprationCompose();
       // 获取订单信息
@@ -188,7 +187,6 @@ class InvoiceElectric extends Component {
       formData:Object.assign({}, this.state.orderData,newObj)
     })
   }
-
   // 点击选择按钮
   openChoiceAction(){
     this.setState({

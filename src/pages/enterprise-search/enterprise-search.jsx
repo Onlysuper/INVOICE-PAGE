@@ -1,6 +1,8 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View } from '@tarojs/components'
-import { AtSearchBar,AtList, AtListItem } from "taro-ui"
+import { AtSearchBar,AtList, AtListItem,AtDivider } from "taro-ui"
+import "./index.scss"
+import utils from "@utils/common.js"
 // redux start
 import { connect } from '@tarojs/redux'
 import {
@@ -33,6 +35,7 @@ class EnterpriseSearch extends Component {
       authCode:'', // 企业搜索请求需要参数
       enterpriseList:[]// 企业列表
     }
+    this.debouncePrint = utils._debounce(this.searchChange, 1000);
   }
   componentWillMount () {
     console.log('这里哦',this.props);
@@ -44,11 +47,6 @@ class EnterpriseSearch extends Component {
   componentDidShow () {
     this.props.dispatchEnterpriseReset()
   }
-  onChange (value) {
-    this.setState({
-      searchVal: value
-    })
-  }
   // 点击搜索按钮
   onActionClick () {
     this.props.dispatchEnterpriseSearch({
@@ -59,7 +57,7 @@ class EnterpriseSearch extends Component {
     }).then(res=>{
       if(res.resultCode==='0'){
         this.setState({
-          enterpriseList:res.data
+          enterpriseList:res.data||[]
         })
       }
       console.log(res);
@@ -76,27 +74,39 @@ class EnterpriseSearch extends Component {
   dispatchEnterpriseTest(){
     this.props.dispatchEnterpriseTest();
   }
+
+  searchChange(value){
+    // 防抖模糊搜索
+    console.log(value)
+  }
+  onChange (value) {
+    this.setState({
+      searchVal: value
+    })
+    this.debouncePrint(value);
+  }
   render () {
     return (
       <View>
-        {/* {this.props.enterprise_search_test} */}
-        {/* <View onClick={this.dispatchEnterpriseTest.bind(this)}>测试</View> */}
         <AtSearchBar
-          actionName='搜一下'
+          actionName='搜索'
           placeholder="请输入企业名称/关键字"
           value={this.state.searchVal}
           onChange={this.onChange.bind(this)}
           onActionClick={this.onActionClick.bind(this)}
         />
-        <AtList>
-       {
-          this.state.enterpriseList.map((item) =>{
-            return (
-                <AtListItem key={item.code} title={item.name} onClick={this.selectedEnterprise.bind(this,item)} />
-            )
-          })
-       }
-        </AtList>
+        <View className='container'>
+          {this.state.enterpriseList&&this.state.enterpriseList.length===0?
+            <AtDivider content='没有更多了' fontColor='#eee' lineColor='#eee' />
+            :<AtList>
+                {this.state.enterpriseList.map((item) =>{
+                  return (
+                      <AtListItem key={item.code} title={item.name} onClick={this.selectedEnterprise.bind(this,item)} />
+                  )
+                })}
+              </AtList>
+          }
+        </View>
       </View>
     )
   }
