@@ -379,23 +379,25 @@ class InvoiceElectric extends Component {
     }
     // 税号转大写
     sendData.taxNo&&(sendData.taxNo=sendData.taxNo.toUpperCase());
-    if(self.page.titleType === "企业"){
-      if(!(/(^[\d|A-Z]{15}$)|(^[\d|A-Z]{18}$)|(^[\d|A-Z]{20}$)/.test(sendData.taxNo))){
-        // '税号一般为15，18，20位数字或者大写字母，您填写的税号可能有误，确定提交？'
-        Taro.showModal({
-          title:'温馨',
-          content:'税号一般为15，18，20位数字或者大写字母，您填写的税号可能有误，确定提交？',
-          success:(res)=>{
-            if(res.confirm){
-              this.confirmSubmit(sendData)
-            }else{
-              console.log('暂时不提交')
+      if(billType === "企业"){
+        if(!(/(^[\d|A-Z]{15}$)|(^[\d|A-Z]{18}$)|(^[\d|A-Z]{20}$)/.test(sendData.taxNo))){
+          // '税号一般为15，18，20位数字或者大写字母，您填写的税号可能有误，确定提交？'
+          Taro.showModal({
+            title:'温馨',
+            content:'税号一般为15，18，20位数字或者大写字母，您填写的税号可能有误，确定提交？',
+            success:(res)=>{
+              if(res.confirm){
+                this.confirmSubmit(sendData)
+              }else{
+                console.log('暂时不提交')
+              }
+            },
+            fail:(err)=>{
+              return new Error()
             }
-          },
-          fail:(err)=>{
-            return new Error()
-          }
-        })
+          })
+      }else{
+        this.confirmSubmit(sendData)
       }
     }else{
       this.confirmSubmit(sendData)
@@ -403,6 +405,8 @@ class InvoiceElectric extends Component {
   }
   // 确认提交
   confirmSubmit(sendData){
+    console.log('sendData',sendData);
+    return false;
     this.props.dispatchInvoicePayment({
       ...sendData
     }).then(res=>{
@@ -467,8 +471,8 @@ class InvoiceElectric extends Component {
                   //  onClick={this.inputClick.bind(this,item['name'])}
                    onChange={this.formDataChange.bind(this,item['name'])}
                  >
-                 {item.name==='taxNo'&&this.state.formData.enterpriseName&& process.env.TARO_ENV === 'h5'&& <AtButton  onClick={this.searchTaxHandle.bind(this)}type='primary' size='small'>查询税号</AtButton>}
-                 {this.state.billType==='0'&&item.name==='enterpriseName' && process.env.TARO_ENV !== 'h5'&& <AtButton  onClick={this.openChoiceAction.bind(this)} type='primary' size='small'>选择</AtButton>}
+                 {item.name==='taxNo'&&this.state.formData.enterpriseName&& process.env.TARO_ENV === 'h5'&& <AtButton className="but-r"  onClick={this.searchTaxHandle.bind(this)}type='primary' size='small'>查询税号</AtButton>}
+                 {this.state.billType==='0'&&item.name==='enterpriseName' && process.env.TARO_ENV !== 'h5'&& <AtButton className="but-r"  onClick={this.openChoiceAction.bind(this)} type='primary' size='small'>选择</AtButton>}
                </AtInput>
              </View>)
           })}
