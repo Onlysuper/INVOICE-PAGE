@@ -1,5 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View} from '@tarojs/components'
+import { View,Image,Text} from '@tarojs/components'
+import namedPng from '../../assets/imgs/invoice_fail.png'
+import "./invoice-states"
 class InvoiceStates extends Component {
   // 项目配置
   componentWillMount () {}
@@ -13,7 +15,12 @@ class InvoiceStates extends Component {
   render () {
     return (
       <View>
-          开票状态页面
+         <View className="container">
+            <View>
+              <Image mode="widthFix" className="state-img" src={namedPng} />
+            </View>
+            <Text>内容巴拉巴拉</Text>
+         </View>
       </View>
     )
   }

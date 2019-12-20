@@ -474,9 +474,9 @@ class InvoiceElectric extends Component {
                </AtInput>
              </View>)
           })}
-          {this.state.billType==='1'&&(<AtNoticebar>根据税务总局要求，除企业之外的所有个人消费者、个体工商户以及行政机关、事业单位、社会团体等非企业性单位均无需提供纳税人识别号。</AtNoticebar>)}
-          {this.state.billType==='0'&&(<AtNoticebar>提示：请核对税号及联系方式准确无误</AtNoticebar>)}
-          {this.state.billType==='0'&& <View className='bs-split-border20'></View>}
+          {this.state.billType==='1'&&(<AtNoticebar icon='volume-plus'>根据税务总局要求，除企业之外的所有个人消费者、个体工商户以及行政机关、事业单位、社会团体等非企业性单位均无需提供纳税人识别号。</AtNoticebar>)}
+          {this.state.billType==='0'&&(<AtNoticebar icon='volume-plus'>请核对税号及联系方式准确无误</AtNoticebar>)}
+          {<View className='bs-split-border20'></View>}
           {this.state.billType==='0'&&
             <AtAccordion
               open={this.state.openMoreForm}

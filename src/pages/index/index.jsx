@@ -45,6 +45,7 @@ class Index extends Component {
     return (
       <View className='index'>
          <AtButton onClick={this.go.bind(this,'/pages/invoice-electric/invoice-electric')} type='primary'>电子发票</AtButton>
+         <AtButton onClick={this.go.bind(this,'/pages/invoice-states/invoice-states')} type='primary'>开票状态</AtButton>
          <AtButton onClick={this.go.bind(this)} type='primary'>快速开票</AtButton>
          <AtButton onClick={this.go.bind(this)} type='primary'>支付</AtButton>
       </View>
