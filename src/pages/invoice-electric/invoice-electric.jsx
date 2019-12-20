@@ -253,7 +253,6 @@ class InvoiceElectric extends Component {
       if(res.resultCode==='0'){
         let data = res.data || [];
         // 组合开票记录选择按钮列表
-        console.log(8888888);
         this.footerOprationCompose(data);
         // 回显最近一条发票信息
         let recentInvoice = data[0];
@@ -341,11 +340,8 @@ class InvoiceElectric extends Component {
         })
       })
     }else if(res.code==='search'){
-      console.log('按照企业名搜索')
-
       Taro.navigateTo({
         url: '/pages/enterprise-search/enterprise-search?authCode='+this.state.orderData.authCode
-        // url: '/pages/quick-invoice/quick-invoice'
       })
     }else{
       // 从历史记录选择
@@ -410,16 +406,14 @@ class InvoiceElectric extends Component {
     this.props.dispatchInvoicePayment({
       ...sendData
     }).then(res=>{
-      // 开具成功 跳转到状态页面
-      console.log(res);
-      // self.$router.replace({
-      //   name: "eic_billTip",
-      //   query: {
-      //           ...this.$route.query,
-      //           entName: this.order.enterpriseName,
-      //           taxNo: this.order.taxNo
-      //   }
-      // });
+      Taro.navigateTo({
+        url: '/pages/invoice-states/invoice-states'
+      })
+        // query: {
+        //           ...this.$route.query,
+        //           entName: this.order.enterpriseName,
+        //           taxNo: this.order.taxNo
+        //   }
     })
   }
   render () {

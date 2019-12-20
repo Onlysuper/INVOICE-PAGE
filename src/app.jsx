@@ -23,7 +23,8 @@ class App extends Component {
     pages: [
       'pages/index/index',
       'pages/invoice-electric/invoice-electric', // 电子发票申请
-      'pages/enterprise-search/enterprise-search', // 电子发票申请
+      'pages/invoice-states/invoice-states', // 发票开票状态
+      'pages/enterprise-search/enterprise-search', // 企业模糊搜索
       'pages/payment/payment',
       'pages/quick-invoice/quick-invoice'
     ],
