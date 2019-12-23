@@ -9,8 +9,8 @@ import {
 // redux start
 import { connect } from '@tarojs/redux'
 import {
-  commonInvoiceRecord, // 获取订单
-} from '@actions/invoice_common'
+  commonInvoiceRecord // 获取订单
+} from '../../actions/invoice_common'
 @connect(({ invoice_common }) => ({
     storeInvoiceRecords:invoice_common.storeInvoiceRecords
   }),
