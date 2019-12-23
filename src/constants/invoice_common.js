@@ -1,0 +1,3 @@
+// 开电子发票
+export const COMMON_INVOICE_RECORD = 'COMMON_INVOICE_RECORD'
+

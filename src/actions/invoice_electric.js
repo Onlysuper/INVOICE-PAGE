@@ -6,6 +6,7 @@ import {
 
 import {
   INVOICE_ElECTRIC_ORDER,
+  INVOICE_ElECTRIC_RECORD,
   INVOICE_ElECTRIC_PAYMENT
 } from '@constants/invoice_electric'
 
@@ -29,7 +30,7 @@ export const dispatchInvoiceOrder = payload => createAction({
  * @param {*} payload
  */
 export const dispatchInvoiceRecord = payload => createAction({
-  type: INVOICE_ElECTRIC_ORDER,
+  type: INVOICE_ElECTRIC_RECORD,
   url: API_INVOICE_ElECTRIC_RECORD,
   payload,
   fetchOptions:{

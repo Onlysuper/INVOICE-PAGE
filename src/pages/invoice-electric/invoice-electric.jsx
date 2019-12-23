@@ -26,14 +26,20 @@ import {
   dispatchInvoiceRecord, // 获取电子发票记录
   dispatchInvoicePayment // 开具电子发票
 } from '@actions/invoice_electric'
+
+import {
+  commonInvoiceRecord // 获取订单
+} from '@actions/invoice_common'
 @connect(
-  ({ enterprise_search }) => ({
-    enterprise_search:enterprise_search.enterprise_search_state
+  ({ enterprise_search,invoice_common }) => ({
+    enterprise_search:enterprise_search.enterprise_search_state,
+    storeInvoiceRecords:invoice_common.storeInvoiceRecords
   }),
   {
     dispatchInvoiceOrder,
     dispatchInvoiceRecord,
-    dispatchInvoicePayment
+    dispatchInvoicePayment,
+    commonInvoiceRecord
   }
 )
 class InvoiceElectric extends Component {
@@ -154,12 +160,19 @@ class InvoiceElectric extends Component {
       billType:value
     })
   }
+  enterpriseChange(type,value){
+    let newObj ={};
+    newObj[type]=value
+    this.setState({
+      formData:Object.assign({}, this.state.formData,newObj)
+    })
+  }
   // input数据改变
   formDataChange (type,value) {
     let newObj ={};
     newObj[type]=value
     this.setState({
-      formData:Object.assign({}, this.state.orderData,newObj)
+      formData:Object.assign({}, this.state.formData,newObj)
     })
   }
   // 点击选择按钮
@@ -226,6 +239,7 @@ class InvoiceElectric extends Component {
       if(res.resultCode==='0'){
         let data = res.data || [];
         // 组合开票记录选择按钮列表
+        this.props.commonInvoiceRecord(data);
         this.footerOprationCompose(data);
         // 回显最近一条发票信息
         let recentInvoice = data[0];
@@ -279,7 +293,6 @@ class InvoiceElectric extends Component {
         phoneNo:"",
         mail:""
       })
-      // console.log('enterprise_search',this.props.enterprise_search);
     }
   }
   // 回显发票信息
@@ -399,7 +412,6 @@ class InvoiceElectric extends Component {
     let formKeys = Object.values(formStructure).filter(item=>item.show)
     let formMoreKeys = Object.values(formMoreStructure).filter(item=>item.show)
     let footerOpration = this.state.footerOpration;// 获取信息方式
-    console.log('footerOpration',footerOpration);
   return (
       <View>
         <View className='content-top'>
@@ -431,8 +443,17 @@ class InvoiceElectric extends Component {
             onClick={this.billTypeChange.bind(this,'billType')}
           />
           <View className='bs-split-border20'></View>
-          <EnterpriseInput></EnterpriseInput>
-          <AtInput
+          <EnterpriseInput
+          name='enterpriseName'
+          title={this.state.billType==='0'?'企业名称':'发票抬头'}
+          type='text'
+          placeholder={this.state.billType==='0'?'请输入企业名称':'请输入个人或姓名'}
+          value={this.state.formData.enterpriseName}
+          onChange={this.enterpriseChange.bind(this,'enterpriseName')}
+          selectedChange={this.getInvoiceDataChoice.bind(this)}
+          butShow={this.state.billType==='0'&& process.env.TARO_ENV !== 'h5'}
+          ></EnterpriseInput>
+          {/* <AtInput
               name='enterpriseName'
               title={this.state.billType==='0'?'企业名称':'发票抬头'}
               type='text'
@@ -441,7 +462,7 @@ class InvoiceElectric extends Component {
               onChange={this.formDataChange.bind(this,'enterpriseName')}
             >
             {this.state.billType==='0'&& process.env.TARO_ENV !== 'h5'&& <AtButton className="but-r"  onClick={this.openChoiceAction.bind(this)} type='primary' size='small'>选择</AtButton>}
-          </AtInput>
+          </AtInput> */}
           {formKeys.map((item,index) =>{
               return (
                 (this.state.billType==='1'&&item.name==='taxNo')?null:<View key={index} className="bs-form-row">
